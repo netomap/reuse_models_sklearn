@@ -11,13 +11,17 @@ import joblib
 class Utilitarios:
 
     """
-    Esta classe ajuda a transformar os dados de entrada em um df para o modelo proposto.
+    Essa classe tem funções que são úteis para a transformação bruta dos dados para o formato necessário
+    que o modelo fará as inferências. 
     """
 
     def __init__(self):
-        print ('criado')
+        print ('iniciado')
     
     def import_parameters(self, joblib_model_path):
+        """
+        Importando o documento que tem os parâmetros necessários para auxiliar o modelo.
+        """
         obj_joblib = joblib.load(joblib_model_path)
         self.model = obj_joblib['model']
         self.label_encoders = obj_joblib['label_encoders']
@@ -65,9 +69,8 @@ class Utilitarios:
         y_prob = self.model.predict_proba(df_transformado) # predição com probabilidades
 
         y_pred_label = self.encoder_output.inverse_transform(y_pred)   # pega o valor de acordo com o encoder_output
-        response = {
-            'predict_labels': y_pred_label,
-            'predict_probs': y_prob
-        }
+        response = []
+        for label, vetor_probs, indice_pred in zip(y_pred_label, y_prob, y_pred):
+            response.append({'label': label, 'prob': vetor_probs[indice_pred]})
 
         return response
